@@ -1,0 +1,88 @@
+@model FeedbackManagement.Models.Feedback
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    ViewData["Title"] = "Feedback Form";
+}
+
+<h2>Submit Your Feedback</h2>
+
+@if (ViewBag.Success != null)
+{
+    <p style="color:green">@ViewBag.Success</p>
+}
+
+@using (Html.BeginForm("Index", "Feedback", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    <p>
+        @Html.LabelFor(m => m.Name)
+        <br />
+        @Html.TextBoxFor(m => m.Name,
+            new { placeholder = "Enter your name" })
+        <br />
+        @Html.ValidationMessageFor(m => m.Name,
+            "", new { @class = "error" })
+    </p>
+
+    <p>
+        @Html.LabelFor(m => m.Email)
+        <br />
+        @Html.TextBoxFor(m => m.Email,
+            new { placeholder = "Enter your email" })
+        <br />
+        @Html.ValidationMessageFor(m => m.Email,
+            "", new { @class = "error" })
+    </p>
+
+    <p>
+        @Html.LabelFor(m => m.Rating)
+        <br />
+        @Html.DropDownListFor(m => m.Rating,
+            new List<SelectListItem>
+            {
+                new SelectListItem { Text = "1 - Poor", Value = "1" },
+                new SelectListItem { Text = "2 - Fair", Value = "2" },
+                new SelectListItem { Text = "3 - Good", Value = "3" },
+                new SelectListItem { Text = "4 - Very Good", Value = "4" },
+                new SelectListItem { Text = "5 - Excellent", Value = "5" }
+            },
+            "-- Select Rating --")
+        <br />
+        @Html.ValidationMessageFor(m => m.Rating,
+            "", new { @class = "error" })
+    </p>
+
+    <p>
+        @Html.LabelFor(m => m.Comments)
+        <br />
+        @Html.TextAreaFor(m => m.Comments, 4, 40,
+            new { placeholder = "Enter comments" })
+        <br />
+        @Html.ValidationMessageFor(m => m.Comments,
+            "", new { @class = "error" })
+    </p>
+
+    <button type="submit">Submit Feedback</button>
+}
+
+<hr />
+
+<h2>Submitted Feedback</h2>
+
+@if (ViewBag.FeedbackList != null &&
+    ((List<FeedbackManagement.Models.Feedback>)
+    ViewBag.FeedbackList).Count > 0)
+{
+    foreach (var item in
+        (List<FeedbackManagement.Models.Feedback>)
+        ViewBag.FeedbackList)
+    {
+        @await Html.PartialAsync("_FeedbackCard", item)
+    }
+}
+else
+{
+    <p>No feedback submitted yet.</p>
+}
